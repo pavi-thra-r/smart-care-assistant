@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CuraWise - Patient Summary</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap" rel="stylesheet"/>
+  <style>
+    body { font-family: 'Poppins', sans-serif; background-color: #f1f7ff; }
+    .navbar { background-color: #007bff; }
+    .navbar-brand { font-size: 28px; font-weight: 700; color: white !important; display: flex; align-items: center; }
+    .navbar-brand img { width: 36px; margin-right: 10px; }
+    .section { padding: 40px 20px; }
+    .card { background-color: #ffffff; border-radius: 16px; padding: 30px; box-shadow: 0 0 15px rgba(0,0,0,0.08); }
+    .footer { text-align: center; padding: 30px; background-color: #007bff; color: white; }
+    .summary-box p { margin-bottom: 10px; font-size: 16px; }
+    .alert-custom { font-weight: bold; color: #b30000; }
+  </style>
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        layout: google.translate.TranslateElement.InlineLayout.HORIZONTAL
+      }, 'google_translate_element');
+    }
+  </script>
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  
+</head>
+<body>
+
+<!-- 🌐 Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark shadow">
+  <div class="container-fluid px-4 d-flex justify-content-between">
+    <a class="navbar-brand" href="index.html">
+      <img src="https://cdn-icons-png.flaticon.com/512/4320/4320337.png" alt="Stethoscope Icon">
+      CuraWise
+    </a>
+    <!-- ✅ Google Translate dropdown -->
+    <div id="google_translate_element"></div>
+  </div>
+</nav>
+
+
+<!-- 📋 Patient Summary -->
+<section class="section">
+  <div class="container">
+    <h2 class="text-center fw-bold mb-4">📋 Patient Summary</h2>
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card summary-box">
+          <h5 class="fw-bold mb-3">👤 Patient Information</h5>
+          <p><strong>Name:</strong> <span id="pName">-</span></p>
+          <p><strong>Age:</strong> <span id="pAge">-</span></p>
+          <p><strong>Date:</strong> <span id="pDate">-</span></p>
+
+          <hr class="my-4"/>
+
+          <h5 class="fw-bold mb-3">🩺 Health Log Summary</h5>
+          <p><strong>Symptoms:</strong> <span id="pSymptoms">-</span></p>
+          <p><strong>Medications:</strong> <span id="pMeds">-</span></p>
+          <p><strong>Side Effects:</strong> <span id="pSideEffects">-</span></p>
+          <p><strong>Severity:</strong> <span id="pSeverity">-</span></p>
+          <p class="alert-custom d-none" id="adrAlert">⚠️ Possible adverse reaction detected!</p>
+
+          <hr class="my-4"/>
+
+          <h5 class="fw-bold mb-3">📝 Auto Summary</h5>
+          <p id="autoSummary">Generating summary...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 👣 Footer -->
+<footer class="footer">
+  <p>© 2025 CuraWise · Patient Handoff Summary</p>
+</footer>
+
+<script>
+  // Dummy localStorage data simulation — should be saved from patient.html submission
+  const patientLog = JSON.parse(localStorage.getItem("latestLog")) || {
+    name: "Asha Patel",
+    age: "28",
+    symptoms: "fever and body pain",
+    meds: "paracetamol",
+    sideEffects: "dizziness",
+    severity: "7",
+    date: new Date().toLocaleDateString()
+  };
+
+  document.getElementById("pName").textContent = patientLog.name;
+  document.getElementById("pAge").textContent = patientLog.age;
+  document.getElementById("pSymptoms").textContent = patientLog.symptoms;
+  document.getElementById("pMeds").textContent = patientLog.meds;
+  document.getElementById("pSideEffects").textContent = patientLog.sideEffects;
+  document.getElementById("pSeverity").textContent = patientLog.severity;
+  document.getElementById("pDate").textContent = patientLog.date;
+
+  // ADR check
+  const adrFlag = (
+    (patientLog.meds.includes("amoxicillin") && patientLog.symptoms.includes("rash")) ||
+    (patientLog.meds.includes("ibuprofen") && patientLog.symptoms.includes("stomach pain")) ||
+    (patientLog.meds.includes("paracetamol") && patientLog.sideEffects.includes("dizziness"))
+  );
+  if (adrFlag) {
+    document.getElementById("adrAlert").classList.remove("d-none");
+  }
+
+  // Auto summary sentence
+  const summarySentence = `Patient ${patientLog.name} (Age ${patientLog.age}) reported "${patientLog.symptoms}" with a severity of ${patientLog.severity} after taking ${patientLog.meds}.`;
+  const adrNote = adrFlag ? " ⚠️ A possible adverse reaction has been flagged based on symptoms and medication." : "";
+  document.getElementById("autoSummary").textContent = summarySentence + adrNote;
+</script>
+
+</body>
+</html>
